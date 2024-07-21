@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
+// ...
+
+Contact.propTypes = {
+  // other prop validations...
+  listing: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    userRef: PropTypes.string.isRequired,
+  }).isRequired,
+};
 export default function Contact({ listing }) {
   const [landlord, setLandlord] = useState(null);
   const [message, setMessage] = useState("");
@@ -41,6 +51,7 @@ export default function Contact({ listing }) {
 
           <Link
             to={`mailto:${landlord.email}?subject=Regarding ${listing.name}&body=${message}`}
+            target="_blank"
             className="bg-slate-700 text-white text-center p-3 uppercase rounded-lg hover:opacity-95"
           >
             Send Message

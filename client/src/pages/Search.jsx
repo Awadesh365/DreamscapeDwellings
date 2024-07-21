@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
+import { FaMapMarkedAlt } from "react-icons/fa";
 
 export default function Search() {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
   const [showMore, setShowMore] = useState(false);
+  const [mapData, setMapData] = useState([]);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -65,6 +69,37 @@ export default function Search() {
 
     fetchListings();
   }, [location.search]);
+
+  useEffect(() => {
+    setMapData(listings);
+  }, [listings]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    // Add event listener
+    window.addEventListener("scroll", handleScroll);
+
+    // Remove event listener on cleanup
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Clean up the event listener when the component unmounts
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleChange = (e) => {
     if (
@@ -127,8 +162,13 @@ export default function Search() {
     }
     setListings([...listings, ...data]);
   };
+
+  const navigateToMapPage = () => {
+    navigate("/map", { state: { mapData } });
+  };
+
   return (
-    <div className="flex flex-col md:flex-row">
+    <div className="flex justify-between flex-col md:flex-row">
       <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen">
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           <div className="flex items-center gap-2">
@@ -227,13 +267,22 @@ export default function Search() {
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
             Search
           </button>
+          {mapData.length > 0 && (
+            <button
+              type="button"
+              onClick={() => navigateToMapPage()}
+              className="bg-red-700 w-full text-white p-3 rounded-lg uppercase hover:opacity-95"
+            >
+              See List on The Map
+            </button>
+          )}
         </form>
       </div>
       <div className="flex-1">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
           Listing results:
         </h1>
-        <div className="p-7 flex flex-wrap gap-4">
+        <div className="p-7 relative flex flex-wrap gap-4 justify-evenly">
           {!loading && listings.length === 0 && (
             <p className="text-xl text-slate-700">No listing found!</p>
           )}
@@ -242,11 +291,33 @@ export default function Search() {
               Loading...
             </p>
           )}
+          {mapData.length > 0 &&
+            (windowWidth > 767 ? (
+              // Button for large devices
+              <button
+                onClick={navigateToMapPage}
+                type="button"
+                className={`border-2 bg-white rounded-lg w-50 h-50 color-red-700 fixed text-2xl ${
+                  isScrolled ? "top-10" : "top-[25%]"
+                } right-0 p-3 z-50 text-red-800 transition-all duration-300`}
+              >
+                <FaMapMarkedAlt />
+              </button>
+            ) : (
+              // Button for mobile devices
+              <button
+                onClick={navigateToMapPage}
+                type="button"
+                className="fixed bottom-0 right-0 bg-white border-2 rounded-lg w-50 h-50 text-2xl p-3 z-50 text-red-800"
+              >
+                <FaMapMarkedAlt />
+              </button>
+            ))}
 
           {!loading &&
             listings &&
-            listings.map((listing) => (
-              <ListingItem key={listing._id} listing={listing} />
+            listings.map((listing, index) => (
+              <ListingItem index={index} key={listing.id} listing={listing} />
             ))}
 
           {showMore && (

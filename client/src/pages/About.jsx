@@ -1,26 +1,41 @@
-import React from "react";
-
 export default function About() {
   return (
-    <div className="py-20 px-4 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4 text-slate-800">
-        About DreamscapeDwelling
-      </h1>
-      <p className="mb-4 text-slate-700">
-        Welcome to DreamscapeDwelling, where we are dedicated to helping our
-        clients achieve their real estate goals.
-      </p>
-      <p className="mb-4 text-slate-700">
-        At DreamscapeDwelling, we understand that buying or selling a property
-        can be a stressful and overwhelming experience. That's why we have
-        created this platform to provide the tools and resources you need to
-        make the most of your real estate journey.
-      </p>
-      <p className="mb-4 text-slate-700">
-        We are committed to helping our clients find the perfect property. Our
-        team of experts has years of experience in the real estate industry, and
-        we are dedicated to helping our clients achieve their goals.
-      </p>
+    <div className="h-screen w-screen relative">
+      <div className="opacity-60 bg-cover bg-center h-full w-full absolute top-0 left-0">
+        <img
+          className="w-1/1 center rounded-lg slide-in-right"
+          src="couple2.png"
+          alt=""
+        />
+      </div>
+      <div className="py-20 px-4 max-w-6xl mx-auto w-full relative slide-in-left">
+        <h1 className="text-5xl font-bold mb-4 text-slate-800 relative z-10">
+          About DreamscapeDwellings
+        </h1>
+        <p className="mb-4 text-slate-700 relative z-10">
+          DreamscapeDwellings is a leading real estate company specializing in
+          luxury properties, condos, and townhouses. We have been building our
+          reputation for providing exceptional service and quality homes for
+          over 20 years.
+        </p>
+        <p className="mb-4 text-slate-700 relative z-10">
+          We strive to create a welcoming and inspiring atmosphere for our
+          clients, by providing high-quality property listings, personalized
+          recommendations, and a safe and supportive community. We believe that
+          every home should be a place where you can truly relax and unwind, and
+          we are committed to helping our clients achieve that goal.
+        </p>
+        <p className="mb-4 text-slate-700 relative z-10">
+          Contact us today to find out more about our services, or to schedule a
+          consultation with our team.
+          <a
+            href="mailto:info@dreamscapedwellings.com"
+            className="text-blue-600"
+          >
+            info@dreamscapedwellings.com
+          </a>
+        </p>
+      </div>
     </div>
   );
 }

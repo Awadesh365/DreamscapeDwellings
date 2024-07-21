@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
 import { MdLocationOn } from "react-icons/md";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 export default function ListingItem({ listing }) {
   return (
@@ -50,3 +51,7 @@ export default function ListingItem({ listing }) {
     </div>
   );
 }
+
+ListingItem.propTypes = {
+  listing: PropTypes.object.isRequired,
+};

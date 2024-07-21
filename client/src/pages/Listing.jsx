@@ -1,42 +1,41 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
-import { useSelector } from "react-redux";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
 import {
   FaBath,
   FaBed,
   FaChair,
-  FaMapMarkedAlt,
   FaMapMarkerAlt,
   FaParking,
   FaShare,
 } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import Contact from "../components/Contact";
 
-// https://sabe.io/blog/javascript-format-numbers-commas#:~:text=The%20best%20way%20to%20format,format%20the%20number%20with%20commas.
-
 export default function Listing() {
-  SwiperCore.use([Navigation]);
   const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [copied, setCopied] = useState(false);
   const [contact, setContact] = useState(false);
   const params = useParams();
+  const navigate = useNavigate();
+  SwiperCore.use([Navigation]);
   const { currentUser } = useSelector((state) => state.user);
-
   useEffect(() => {
     const fetchListing = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`/api/listing/get/${params.listingId}`);
-        const data = await res.json();
+        const listingId = params.listingId;
+        const response = await fetch(`/api/listing/get/${listingId}`);
+        const data = await response.json();
         if (data.success === false) {
           setError(true);
           setLoading(false);
+          console.log(data.message);
           return;
         }
         setListing(data);
@@ -48,8 +47,13 @@ export default function Listing() {
       }
     };
     fetchListing();
-  }, [params.listingId]);
+  }, [params.id]);
 
+  const handleMapClick = () => {
+    // Assuming the route to your map component is '/map'
+    // You might need to modify this based on your actual route and requirements
+    navigate("/map", { state: { mapData: [listing] } });
+  };
   return (
     <main>
       {loading && <p className="text-center my-7 text-2xl">Loading...</p>}
@@ -65,7 +69,7 @@ export default function Listing() {
                   className="h-[550px]"
                   style={{
                     background: `url(${url}) center no-repeat`,
-                    backgroundSize: "cover",
+                    backgroundSize: "contain",
                   }}
                 ></div>
               </SwiperSlide>
@@ -96,8 +100,14 @@ export default function Listing() {
                 : listing.regularPrice.toLocaleString("en-US")}
               {listing.type === "rent" && " / month"}
             </p>
-            <p className="flex items-center mt-6 gap-2 text-slate-600  text-sm">
-              <FaMapMarkerAlt className="text-green-700" />
+            <p
+              onClick={handleMapClick}
+              className="flex items-center mt-6 gap-2 text-slate-600  text-sm hover:cursor-pointer"
+            >
+              <FaMapMarkerAlt
+                className="text-green-700 cursor-pointer ml-2"
+                title="View on map"
+              />
               {listing.address}
             </p>
             <div className="flex gap-4">
@@ -144,7 +154,7 @@ export default function Listing() {
                 Contact landlord
               </button>
             )}
-            {contact && <Contact listing={listing} />}
+            {contact && <Contact userRef={listing.userRef} listing={listing} />}
           </div>
         </div>
       )}
